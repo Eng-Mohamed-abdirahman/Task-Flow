@@ -11,7 +11,7 @@ export const getTasks = async () : Promise<Task[]> => {
 
         const collection = await getCollection()
 
-        const tasks = await collection.find().toArray();
+        const tasks = (await collection.find().sort({ createdAt: -1 }).toArray());
 
         return tasks.map((task) =>({
             _id: task._id.toString(),

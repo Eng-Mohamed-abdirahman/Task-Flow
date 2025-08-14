@@ -16,6 +16,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { useState } from "react";
 import { formSchema } from "@/app/utils/userSchemas";
+import { createTaskAction } from "@/app/actions/createTask";
+import { toast } from "sonner";
 
 
 
@@ -30,10 +32,17 @@ export default function NewTask() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    setSubmitted(true);
-    // You can handle your submit logic here
-    setTimeout(() => setSubmitted(false), 2000);
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+  
+
+    const result = await createTaskAction(values);
+
+    if (!result) {
+      // Handle error
+      console.error("Failed to create task");
+    }
+
+    return toast.success("Task created successfully:");
   }
 
   return (

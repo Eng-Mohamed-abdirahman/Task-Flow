@@ -9,7 +9,7 @@ export interface Task {
 
 export interface AddTaskInput {
     title: string;
-    description: string;
+    description?: string;
     status: "todo" | "in-progress" | "done";
 }
 
