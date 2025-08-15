@@ -27,17 +27,24 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark" style={{ colorScheme: "dark" }}>
+    <html lang="en" className="light"
+                       style={{colorScheme:"light"}}>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         cz-shortcut-listen="true"
       >
-        <div className="flex min-h-screen flex-col">
-          <div className="flex-1">{children}</div>
-          <ThemeProvider attribute="class" defaultTheme="system" enableSystem />
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <div className="flex min-h-screen flex-col">
+            <div className="flex-1">{children}</div>
 
-          <Toaster position="top-center" />
-        </div>
+            <Toaster position="top-center" />
+          </div>
+        </ThemeProvider>
       </body>
     </html>
   );

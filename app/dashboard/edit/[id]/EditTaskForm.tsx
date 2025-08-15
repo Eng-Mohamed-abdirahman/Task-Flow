@@ -11,47 +11,46 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { useState } from "react";
 import { formSchema } from "@/app/utils/userSchemas";
-import { createTaskAction } from "@/app/actions/createTask";
+import { updateTaskAction } from "@/app/actions/updateTask";
 import { toast } from "sonner";
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
+import { UpdateTaskInput } from "@/app/utils/tasks";
 
-
-
-export default function NewTask() {
+export default function EditTaskForm({ initialTask }: { initialTask: any }) {
   const [submitted, setSubmitted] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      title: "",
-      description: "",
-      status: "pending",
+      title: initialTask.title || "",
+      description: initialTask.description || "",
+      status: initialTask.status || "pending",
     },
   });
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-  
-
-    const result = await createTaskAction(values);
+  async function onSubmit(values: UpdateTaskInput) {
+    const result = await updateTaskAction(initialTask._id, values);
 
     if (!result) {
-      // Handle error
-      console.error("Failed to create task");
+      toast.error("Failed to update task");
+      return;
     }
 
-    return toast.success("Task created successfully:");
-    redirect("/dashboard/taskList");
+    toast.success("Task updated successfully!");
+    // revalidatePath(`/dashboard/taskList`);
+    redirect(`/dashboard/taskList`);
+    setSubmitted(true);
   }
 
   return (
-    <div className="flex justify-center items-center min-h-[70vh]  w-full"> 
+    <div className="flex justify-center items-center min-h-[70vh] w-full">
       <Card className="w-full max-w-lg shadow-lg border-none">
         <CardHeader>
-          <CardTitle className="text-2xl ">Create New Task</CardTitle>
+          <CardTitle className="text-2xl">Edit Task</CardTitle>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -88,8 +87,7 @@ export default function NewTask() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Status</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}
-                 >
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Select status" />
@@ -107,10 +105,10 @@ export default function NewTask() {
               />
               <Button
                 type="submit"
-                className="w-full  text-white"
+                className="w-full text-white"
                 disabled={form.formState.isSubmitting}
               >
-                {form.formState.isSubmitting ? "Submitting..." : "Create Task"}
+                {form.formState.isSubmitting ? "Updating..." : "Update Task"}
               </Button>
             </form>
           </Form>

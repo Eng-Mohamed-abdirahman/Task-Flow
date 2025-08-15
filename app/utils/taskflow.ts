@@ -1,3 +1,4 @@
+"use server"
 import { ObjectId } from "mongodb";
 import { getCollection } from "./db";
 import { AddTaskInput, Task, UpdateTaskInput } from "./tasks";

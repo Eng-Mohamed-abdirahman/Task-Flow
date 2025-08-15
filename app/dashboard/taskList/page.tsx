@@ -12,6 +12,11 @@ import { getTasks } from "@/app/utils/taskflow";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime.js";
 import Link from "next/link";
+import { de } from "zod/v4/locales";
+import { deleteTaskAction } from "@/app/actions/deleteTask";
+import { toast } from "sonner";
+import RelativeTime from "@/components/RelativeTime";
+import TaskActions from "./TaskActions";
 
 dayjs.extend(relativeTime);
 
@@ -23,6 +28,18 @@ const statusColor: Record<string, string> = {
 
 export default async function TaskList() {
 	const tasks = await getTasks();
+
+	if (!tasks || tasks.length === 0) {
+		return (
+			<div className="flex flex-col items-center min-h-[70vh] py-8">
+				<Card className="w-full max-w-2xl shadow-lg border-none">
+					<CardContent className="text-center">
+						<p className="text-gray-500">No tasks available</p>
+					</CardContent>
+				</Card>
+			</div>
+		);
+	}
 
 	return (
 		<div className="flex flex-col items-center min-h-[70vh] py-8">
@@ -44,7 +61,7 @@ export default async function TaskList() {
 									{task.date}
 									{task.createdAt && (
 										<span className="ml-2 text-xs text-gray-400">
-											• {dayjs(task.createdAt).fromNow()}
+											• <RelativeTime date={task.createdAt} />
 										</span>
 									)}
 								</div>
@@ -59,30 +76,7 @@ export default async function TaskList() {
 										? "In Progress"
 										: "Done"}
 								</Badge>
-								<DropdownMenu>
-									<DropdownMenuTrigger asChild>
-										<Button
-											variant="ghost"
-											size="icon"
-											className="h-8 w-8"
-										>
-											<EllipsisVertical className="w-5 h-5" />
-										</Button>
-									</DropdownMenuTrigger>
-									<DropdownMenuContent align="end">
-										<DropdownMenuItem asChild>
-											<Link href={`/dashboard/edit/${task._id}`}>
-												Edit
-											</Link>
-										</DropdownMenuItem>
-										<DropdownMenuItem
-											className="text-red-600"
-											// onClick={() => handleDelete(task._id)} // Implement this handler as needed
-										>
-											Delete
-										</DropdownMenuItem>
-									</DropdownMenuContent>
-								</DropdownMenu>
+								<TaskActions id={task._id} />
 							</div>
 						</Card>
 					))}
