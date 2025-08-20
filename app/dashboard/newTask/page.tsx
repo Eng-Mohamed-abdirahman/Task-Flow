@@ -1,40 +1,39 @@
 "use client";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
+import { Textarea } from "@/components/ui/textarea";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
-import { formSchema } from "@/app/utils/userSchemas";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
+
+// import { createTaskAction } from "@/app/actions/createTask";
 import { createTaskAction } from "@/app/actions/createTask";
-import { toast } from "sonner";
+import { TaskSchema } from "@/app/utils/TaskSchema";
 import { redirect } from "next/navigation";
+import { toast } from "sonner";
 
 
 
 export default function NewTask() {
-  const [submitted, setSubmitted] = useState(false);
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof TaskSchema>>({
+    resolver: zodResolver(TaskSchema),
     defaultValues: {
       title: "",
       description: "",
-      status: "pending",
+      status: "Pending",
     },
   });
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-  
+  async function onSubmit(values: z.infer<typeof TaskSchema>) {
 
     const result = await createTaskAction(values);
 
@@ -43,8 +42,18 @@ export default function NewTask() {
       console.error("Failed to create task");
     }
 
-    return toast.success("Task created successfully:");
-    redirect("/dashboard/taskList");
+    if (result.error) {
+      toast.error("Failed to create task");
+      console.error(result.error);
+    }
+
+    if (result.success) {
+      toast.success("Task created successfully");
+      // redirect("/dashboard/taskList");
+    }
+
+    //  toast.success("Task created successfully");
+    //   // redirect("/dashboard/taskList");
   }
 
   return (
@@ -83,22 +92,25 @@ export default function NewTask() {
                 )}
               />
               <FormField
+              
                 control={form.control}
                 name="status"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Status</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}
+                    <Select 
+                    onValueChange={field.onChange} defaultValue={field.value}
+                    
                  >
                       <FormControl>
-                        <SelectTrigger>
+                        <SelectTrigger className="w-full">
                           <SelectValue placeholder="Select status" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="pending">Pending</SelectItem>
-                        <SelectItem value="in-progress">In Progress</SelectItem>
-                        <SelectItem value="done">Done</SelectItem>
+                        <SelectItem value="Pending">Pending</SelectItem>
+                        <SelectItem value="In Progress">In Progress</SelectItem>
+                        <SelectItem value="Done">Done</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -110,7 +122,7 @@ export default function NewTask() {
                 className="w-full  text-white"
                 disabled={form.formState.isSubmitting}
               >
-                {form.formState.isSubmitting ? "Submitting..." : "Create Task"}
+               {form.formState.isSubmitting ? "Submitting..." : "Create Task"}
               </Button>
             </form>
           </Form>

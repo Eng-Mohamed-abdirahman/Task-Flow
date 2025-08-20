@@ -5,6 +5,7 @@ import Page from "./dashboard/page";
 import Dashboard from "./dashboard/page";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/theme-provider";
+import { SessionProvider } from "next-auth/react";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,6 +34,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         cz-shortcut-listen="true"
       >
+         <SessionProvider>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
@@ -45,6 +47,7 @@ export default function RootLayout({
             <Toaster position="top-center" />
           </div>
         </ThemeProvider>
+        </SessionProvider>
       </body>
     </html>
   );

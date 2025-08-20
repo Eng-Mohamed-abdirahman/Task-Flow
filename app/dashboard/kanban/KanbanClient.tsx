@@ -20,6 +20,24 @@ import { useState } from "react";
 import { updateTaskAction } from "@/app/actions/updateTask";
 import { Task } from "@/app/utils/tasks";
 
+// Helper to normalize status values for frontend columns
+const normalizeStatus = (status: string) => {
+  if (!status) return "pending";
+  const s = status.trim().toLowerCase();
+  if (s === "pending") return "pending";
+  if (s === "done") return "done";
+  if (s === "in progress" || s === "in-progress") return "in-progress";
+  return "pending";
+};
+
+// Helper to convert frontend status to backend format
+const toBackendStatus = (status: string) => {
+  if (status === "pending") return "Pending";
+  if (status === "in-progress") return "In Progress";
+  if (status === "done") return "Done";
+  return "Pending";
+};
+
 // Column colors for better distinction
 const columnStyles: Record<string, string> = {
   pending: "bg-gradient-to-br from-blue-100 to-blue-200 border-blue-400",
@@ -73,7 +91,7 @@ function Avatar({ name }: { name: string }) {
 // Sortable card component
 function SortableCard({ task }: { task: Task }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
-    id: task._id,
+    id: task.id ?? "", // guard against missing id
   });
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -112,14 +130,14 @@ function SortableCard({ task }: { task: Task }) {
         <span
           className={`
             text-xs px-2 py-0.5 rounded-full font-medium
-            ${task.status === "pending"
+            ${normalizeStatus(task.status) === "pending"
               ? "bg-blue-100 text-blue-700"
-              : task.status === "in-progress"
+              : normalizeStatus(task.status) === "in-progress"
               ? "bg-yellow-100 text-yellow-700"
               : "bg-green-100 text-green-700"}
           `}
         >
-          {columns.find((c) => c.id === task.status)?.name}
+          {columns.find((c) => c.id === normalizeStatus(task.status))?.name}
         </span>
       </div>
     </div>
@@ -134,9 +152,9 @@ export default function KanbanClient({ initialTasks }: { initialTasks: Task[] })
 
   // Helper: get tasks for a column
   const getTasks = (columnId: string) =>
-    tasks.filter((task) => task.status === columnId);
+    tasks.filter((task) => normalizeStatus(task.status) === columnId);
 
-  const findTask = (id: string) => tasks.find((t) => t._id === id);
+  const findTask = (id: string) => tasks.find((t) => t.id === id);
 
   const handleDragStart = (event: any) => {
     setActiveId(event.active.id);
@@ -153,12 +171,12 @@ export default function KanbanClient({ initialTasks }: { initialTasks: Task[] })
     // If dropped on a column, move to that column (at end)
     if (columns.some((col) => col.id === over.id)) {
       const newStatus = over.id as string;
-      if (activeTask.status !== newStatus) {
+      if (normalizeStatus(activeTask.status) !== newStatus) {
         const updatedTasks = tasks.map((t) =>
-          t._id === activeTask._id ? { ...t, status: newStatus } : t
+          t.id === activeTask.id ? { ...t, status: newStatus } : t
         );
         setTasks(updatedTasks);
-        await updateTaskAction(activeTask._id, { status: newStatus });
+        await updateTaskAction(activeTask.id, { status: toBackendStatus(newStatus) });
       }
       return;
     }
@@ -167,30 +185,30 @@ export default function KanbanClient({ initialTasks }: { initialTasks: Task[] })
     const overTask = findTask(over.id as string);
     if (!overTask) return;
 
-    if (activeTask.status === overTask.status) {
+    if (normalizeStatus(activeTask.status) === normalizeStatus(overTask.status)) {
       // Reorder within the same column
-      const columnTasks = getTasks(activeTask.status);
-      const oldIdx = columnTasks.findIndex((t) => t._id === active.id);
-      const newIdx = columnTasks.findIndex((t) => t._id === over.id);
+      const columnTasks = getTasks(normalizeStatus(activeTask.status));
+      const oldIdx = columnTasks.findIndex((t) => t.id === active.id);
+      const newIdx = columnTasks.findIndex((t) => t.id === over.id);
       if (oldIdx !== -1 && newIdx !== -1 && oldIdx !== newIdx) {
         const newOrder = arrayMove(columnTasks, oldIdx, newIdx);
-        const otherTasks = tasks.filter((t) => t.status !== activeTask.status);
+        const otherTasks = tasks.filter((t) => normalizeStatus(t.status) !== normalizeStatus(activeTask.status));
         setTasks([...otherTasks, ...newOrder]);
       }
     } else {
       // Move to another column (at position of overTask)
       const updatedTasks = tasks.map((t) =>
-        t._id === activeTask._id ? { ...t, status: overTask.status } : t
+        t.id === activeTask.id ? { ...t, status: normalizeStatus(overTask.status) } : t
       );
       setTasks(updatedTasks);
-      await updateTaskAction(activeTask._id, { status: overTask.status });
+      await updateTaskAction(activeTask.id, { status: toBackendStatus(normalizeStatus(overTask.status)) });
     }
   };
 
   return (
-    <div className="min-h-screen  p-8">
+    <div className="min-h-screen p-2 sm:p-4 md:p-8">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-4xl font-extrabold mb-10 text-gray-800 text-center drop-shadow">
+        <h1 className="text-3xl sm:text-4xl font-extrabold mb-6 sm:mb-10 text-gray-800 text-center drop-shadow">
           🚀 Taskflow Kanban Board
         </h1>
         <DndContext
@@ -199,15 +217,24 @@ export default function KanbanClient({ initialTasks }: { initialTasks: Task[] })
           onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
         >
-          <div className="flex gap-8 justify-center items-start">
+          <div
+            className="
+              flex flex-col gap-6
+              sm:flex-row sm:gap-8
+              justify-center items-stretch
+              overflow-x-auto
+              pb-4
+              "
+            style={{ WebkitOverflowScrolling: "touch" }}
+          >
             {columns.map((column) => (
               <DroppableColumn key={column.id} column={column}>
                 <SortableContext
-                  items={getTasks(column.id).map((task) => task._id)}
+                  items={getTasks(column.id).map((task) => task.id)}
                   strategy={verticalListSortingStrategy}
                 >
                   {getTasks(column.id).map((task) => (
-                    <SortableCard key={task._id} task={task} />
+                    <SortableCard key={task.id} task={task} />
                   ))}
                 </SortableContext>
               </DroppableColumn>
@@ -220,9 +247,7 @@ export default function KanbanClient({ initialTasks }: { initialTasks: Task[] })
           </DragOverlay>
         </DndContext>
       </div>
-      <footer className="mt-16 text-center text-gray-400 text-sm">
-        Made with <span className="text-pink-400">♥</span> using dnd-kit & Tailwind CSS
-      </footer>
+      
     </div>
   );
 }

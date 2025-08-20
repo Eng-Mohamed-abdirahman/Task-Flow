@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { useState } from "react";
-import { formSchema } from "@/app/utils/userSchemas";
+import { formSchema, updateSchema } from "@/app/utils/userSchemas";
 import { updateTaskAction } from "@/app/actions/updateTask";
 import { toast } from "sonner";
 import { redirect } from "next/navigation";
@@ -23,8 +23,8 @@ import { UpdateTaskInput } from "@/app/utils/tasks";
 
 export default function EditTaskForm({ initialTask }: { initialTask: any }) {
   const [submitted, setSubmitted] = useState(false);
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof updateSchema>>({
+    resolver: zodResolver(updateSchema),
     defaultValues: {
       title: initialTask.title || "",
       description: initialTask.description || "",
@@ -32,8 +32,8 @@ export default function EditTaskForm({ initialTask }: { initialTask: any }) {
     },
   });
 
-  async function onSubmit(values: UpdateTaskInput) {
-    const result = await updateTaskAction(initialTask._id, values);
+  async function onSubmit(values: z.infer<typeof updateSchema>) {
+    const result = await updateTaskAction(initialTask.id, values);
 
     if (!result) {
       toast.error("Failed to update task");
@@ -94,9 +94,9 @@ export default function EditTaskForm({ initialTask }: { initialTask: any }) {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="pending">Pending</SelectItem>
-                        <SelectItem value="in-progress">In Progress</SelectItem>
-                        <SelectItem value="done">Done</SelectItem>
+                        <SelectItem value="Pending">Pending</SelectItem>
+                        <SelectItem value="In Progress">In Progress</SelectItem>
+                        <SelectItem value="Done">Done</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />

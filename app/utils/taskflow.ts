@@ -1,27 +1,30 @@
 "use server"
-import { ObjectId } from "mongodb";
-import { getCollection } from "./db";
-import { AddTaskInput, Task, UpdateTaskInput } from "./tasks";
-import { UserSchema } from "./userSchemas";
+import { auth } from "@/auth";
+import { prisma } from "@/prisma/prisma";
 import z from "zod";
+import { Task } from "./tasks";
+import { TaskSchema } from "./TaskSchema";
+import { updateSchema } from "./userSchemas";
 
 
 
 export const getTasks = async () : Promise<Task[]> => {
     try {
 
-        const collection = await getCollection()
+        const session = await auth();
+        console.log("Session in getTasks:", session);
+        if (!session?.user?.id) {
+            throw new Error("Not authenticated");
+        }
 
-        const tasks = (await collection.find().sort({ createdAt: -1 }).toArray());
+        const userId = session.user.id;
 
-        return tasks.map((task) =>({
-            _id: task._id.toString(),
-            title: task.title,
-            description: task.description,
-            status: task.status,
-            createdAt: task.createdAt.toISOString(),
-            updatedAt: task.updatedAt?.toISOString()
-        }));
+        const tasks = await prisma.task.findMany({
+            where: { userId : userId },
+            orderBy: { createdAt: "desc" },
+        });
+
+        return tasks;
 
     } catch (error) {
         console.error("Error fetching tasks:", error);
@@ -30,65 +33,123 @@ export const getTasks = async () : Promise<Task[]> => {
 };
 
 
-export const createTask = async (task: AddTaskInput): Promise<String | null> => {
+export const createTask = async (task: z.infer<typeof TaskSchema>): Promise<{ success?: string; error?: string }> => {
+
+    const validateTask = TaskSchema.parse(task);
+    const session = await auth();
+console.log("Session in createTask:", session);
+if (!session?.user?.id) {
+  return { error: "Not authenticated" };
+}
     try {
-        const collection = await getCollection();
-        const result = await collection.insertOne({
-            ...task,
-            createdAt: new Date(),
-            updatedAt: new Date()
+        const createdTask = await prisma.task.create({
+            data: {
+                ...validateTask,
+                userId: session?.user?.id, // This must be a valid ObjectId string
+                createdAt: new Date(),
+                updatedAt: new Date(),
+            },
         });
-        return result.insertedId.toString();
+        return { success: createdTask.id };
     } catch (error) {
         console.error("Error creating task:", error);
-        return null;
+        return { error: "Failed to create task" };
     }
 };
 
-export const getTaskById = async (id: string): Promise<Task | null> => {
-    try {
-        const collection = await getCollection();
-        const task = await collection.findOne({ _id: new ObjectId(id) });
-        if (!task) return null;
-        return {
-            _id: task._id.toString(),
-            title: task.title,
-            description: task.description,
-            status: task.status,
-            createdAt: task.createdAt.toISOString(),
-            updatedAt: task.updatedAt?.toISOString()
-        };
-    } catch (error) {
-        console.error("Error fetching task by ID:", error);
-        return null;
+
+
+export const getTaskById = async (
+  id: string
+): Promise<{ task?: Task; error?: string }> => {
+
+    if (!id) {
+    return { error: "No task id provided" };
+  }
+
+  try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return { error: "Not authenticated" };
     }
+
+    const task = await prisma.task.findUnique({
+      where: { id },
+    });
+
+    if (!task) {
+      return { error: "Task not found" };
+    }
+
+    if (task.userId !== session.user.id) {
+      return { error: "Not authorized" };
+    }
+
+    return { task };
+  } catch (error) {
+    console.error("Error fetching task by ID:", error);
+    return { error: "Failed to fetch task" };
+  }
 };
 
-export const UpdateTask = async (id: string, task: UpdateTaskInput): Promise<boolean> => {
-    try {
-        const collection = await getCollection();
-        const result = await collection.updateOne({ _id: new ObjectId(id) }, { $set: task });
-        return result.modifiedCount > 0;
-    } catch (error) {
-        console.error("Error updating task:", error);
-        return false;
+
+export const updateTask = async (
+  id: string,
+  data: z.infer<typeof updateSchema>
+): Promise<{ success?: string; error?: string }> => {
+  try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return { error: "Not authenticated" };
     }
+
+    // Find the task and ensure it belongs to the logged-in user
+    const task = await prisma.task.findUnique({
+      where: { id },
+    });
+
+    if (!task) {
+      return { error: "Task not found" };
+    }
+
+    if (task.userId !== session.user.id) {
+      return { error: "Not authorized" };
+    }
+
+    const updatedTask = await prisma.task.update({
+      where: { id },
+      data: {
+        ...data,
+        updatedAt: new Date(),
+      },
+    });
+
+    return { success: updatedTask.id };
+  } catch (error) {
+    console.error("Error updating task:", error);
+    return { error: "Failed to update task" };
+  }
 };
 
 export const deleteTask = async (id: string): Promise<boolean> => {
     try {
-        const collection = await getCollection();
-        const result = await collection.deleteOne({ _id: new ObjectId(id) });
-        return result.deletedCount > 0;
+        const session = await auth();
+        if (!session?.user?.id) {
+            throw new Error("Not authenticated");
+        }
+
+        const existingTask = await getTaskById(id);
+        if (!existingTask) {
+            throw new Error("Task not found");
+        }
+
+        await prisma.task.delete({
+            where: { id: id },
+        });
+
+        return true;
     } catch (error) {
         console.error("Error deleting task:", error);
         return false;
     }
 };
-
-
-
-
-export const loginGithub = async (data: z.infer<typeof UserSchema>) => {
-    
-}

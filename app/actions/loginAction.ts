@@ -1,27 +1,49 @@
 "use server"
 
 import { redirect } from "next/navigation";
-import {signIn , signOut} from "../auth"
+import {signIn } from "@/auth"
+import { LoginSchema } from "../utils/userSchemas";
+import z from "zod";
+import { prisma } from "@/prisma/prisma";
+import { AuthError } from "next-auth";
 
-export const loginGithub = async () => {
+export const LoginAction = async ( data : z.infer<typeof LoginSchema>) => {
+
+
+   const validateData = LoginSchema.parse(data);
+   if (!validateData) {
+     return { error: "Invalid login data" };
+   }
+
+   let {email , password} = validateData
+
+   email = email.toLowerCase()
+
+   const userExist = await prisma.user.findUnique({
+       where: { email }
+   })
+
+   if (!userExist) {
+       return { error: "User not found" }
+   }
   try {
-    const result = await signIn("github");
-    if (result) {
-      redirect("/dashboard");
-    }
-    return result;
-  } catch (error) {
-    console.error("Error logging in with GitHub:", error);
-    return null;
-  }
+   await signIn("credentials", {
+       email,
+       password,
+       redirectTo: "/dashboard",
+    });
+
+    return { success: "Login successful" };
+
+  } catch (error) { 
+    if (error instanceof AuthError) {
+     switch (error.type) {
+       case "CredentialsSignin":
+         return { error: "Invalid email or password" }
+       default:
+         return { error: "Login failed" }
+     }
+   }
+   throw error
 }
-
-export const logout = async () => {
-  try {
-    const result = await signOut();
-    return result;
-  } catch (error) {
-    console.error("Error logging out:", error);
-    return null;
-  }
-};
+}

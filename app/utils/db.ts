@@ -1,9 +1,9 @@
 import { Db , MongoClient , Collection} from "mongodb"
 
-const uri = process.env.MONGO_URI;
+const uri = process.env.DATABASE_URL;
 
 if(!uri){
-    throw new Error("MONGO_URI is not defined");
+    throw new Error("DATABASE_URL is not defined");
 }
 
 let client : MongoClient;

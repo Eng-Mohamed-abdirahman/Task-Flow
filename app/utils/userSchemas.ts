@@ -1,34 +1,40 @@
-import zod from "zod"
+import z from "zod"
 
-export const UserSchema = zod.object({
-  email: zod.string().email("Invalid email address"),
-  password: zod.string()
+export const LoginSchema = z.object({
+  email: z.string().email("Invalid email address"),
+  password: z.string()
   .min(6, "Password must be at least 6 characters long")
   .max(50, "Password must not exceed 50 characters"),
 })
 
 
-export const userRegistrationSchema = zod.object({
-  username: zod.string().min(3, "Username must be at least 3 characters long"),
-  email: zod.string().email("Invalid email address"),
-  password: zod.string()
+export const userRegistrationSchema = z.object({
+  name: z.string().min(3, "Name must be at least 3 characters long"),
+  email: z.string().email("Invalid email address"),
+  password: z.string()
     .min(6, "Password must be at least 6 characters long")
     .max(50, "Password must not exceed 50 characters"),
-  confirmPassword: zod.string()
+  confirmPassword: z.string()
     .min(6, "Confirm Password must be at least 6 characters long")
-    .max(50, "Confirm Password must not exceed 50 characters")
-}).refine(
-  (data) => data.password === data.confirmPassword,
-  {
-    message: "Passwords must match",
-    path: ["confirmPassword"],
-  }
-)
+    .max(50, "Confirm Password must not exceed 50 characters"),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords must match",
+  path: ["confirmPassword"],
+});
 
-export const formSchema = zod.object({
-  title: zod.string().min(2, "Title is required"),
-  description: zod.string().min(5, "Description is required"),
-  status: zod.enum(["pending", "in-progress", "done"], {
-    required_error: "Please select a status",
+
+export const formSchema = z.object({
+  title: z.string().min(3, "Title must be at least 3 characters long"),
+  description: z.string().min(10, "Description must be at least 10 characters long"),
+  status: z.enum(["Pending", "In Progress", "Done"], {
+    errorMap: () => ({ message: "Invalid status" }),
   }),
+});
+
+export const updateSchema = z.object({
+  title: z.string().min(3, "Title must be at least 3 characters long").optional(),
+  description: z.string().min(3, "Description must be at least 3 characters long").optional(),
+  status: z.enum(["Pending", "In Progress", "Done"], {
+    errorMap: () => ({ message: "Invalid status" }),
+  }).optional(),
 });

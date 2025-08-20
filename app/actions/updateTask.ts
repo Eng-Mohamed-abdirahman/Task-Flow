@@ -1,30 +1,24 @@
 "use server";
-import { UpdateTask, getTaskById } from "@/app/utils/taskflow";
+
+import { getTaskById, updateTask } from "@/app/utils/taskflow";
 import { revalidatePath } from "next/cache";
+import { updateSchema } from "../utils/userSchemas"; // schema hal meel ku hay
+import z from "zod";
 
-export const updateTaskAction = async (id: string, formData: { status: string }) => {
-  // Validate status if needed
-  if (!["pending", "in-progress", "done"].includes(formData.status)) {
-    throw new Error("Invalid status");
+export const updateTaskAction = async (id: string, formData: z.infer<typeof updateSchema>) => {
+
+  
+
+  const validate = updateSchema.safeParse(formData);
+
+  if (!validate.success) {
+    return { error: "Validation failed", details: validate.error.format() };
   }
 
-  const existingTask = await getTaskById(id);
-  if (!existingTask) {
-    throw new Error("Task not found");
-  }
-
-  // Add updatedAt field
-  const updatedTask = await UpdateTask(id, { 
-    status: formData.status, 
-    updatedAt: new Date() 
-  });
-
-  if (!updatedTask) {
-    throw new Error("Failed to update task");
-  }
+  const updatedTask = await updateTask(id, validate.data);
 
   revalidatePath("/dashboard/kanban");
   revalidatePath("/dashboard/taskList");
 
-  return true;
+  return { success: true, data: updatedTask };
 };

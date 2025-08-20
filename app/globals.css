@@ -120,3 +120,7 @@
     @apply bg-background text-foreground;
   }
 }
+.gradient-brand {
+  @apply bg-gradient-to-br from-primary/80 to-teal-400;
+}
+
