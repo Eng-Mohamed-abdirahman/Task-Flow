@@ -1,7 +1,11 @@
 import { getTaskById } from "@/app/utils/taskflow";
 import EditTaskForm from "./EditTaskForm";
 
-export default async function EditTaskPage({ params }: { params: { id: string } }) {
+interface EditTaskPageProps {
+  params: { id: string };
+}
+
+export default async function EditTaskPage({ params }: EditTaskPageProps) {
   const { id } = params;
   const { task, error } = await getTaskById(id);
 
