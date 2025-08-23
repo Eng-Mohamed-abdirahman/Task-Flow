@@ -11,14 +11,12 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
 // import { createTaskAction } from "@/app/actions/createTask";
 import { createTaskAction } from "@/app/actions/createTask";
 import { TaskSchema } from "@/app/utils/TaskSchema";
-import { redirect } from "next/navigation";
 import { toast } from "sonner";
 
 

@@ -14,8 +14,16 @@ const statusColor: Record<string, string> = {
     Done: "bg-green-100 text-green-800",
 };
 
+type Task = {
+  id: string;
+  title: string;
+  status: "Pending" | "In Progress" | "Done";
+  date?: string;
+  createdAt?: string;
+};
+
 export default async function TaskList() {
-    const tasks = await getTasks();
+    const tasks: Task[] = await getTasks();
 
     if (!tasks || tasks.length === 0) {
         return (
@@ -36,7 +44,7 @@ export default async function TaskList() {
                     <CardTitle className="text-2xl text-blue-900">Task List</CardTitle>
                 </CardHeader>
                 <CardContent className="flex flex-col gap-4">
-                    {tasks.map((task: any) => (
+                    {tasks.map((task) => (
                         <Card
                             key={task.id}
                             className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-white shadow border rounded-lg gap-2"

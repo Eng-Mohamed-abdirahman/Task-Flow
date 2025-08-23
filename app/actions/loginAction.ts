@@ -1,6 +1,4 @@
 "use server"
-
-import { redirect } from "next/navigation";
 import {signIn } from "@/auth"
 import { LoginSchema } from "../utils/userSchemas";
 import z from "zod";

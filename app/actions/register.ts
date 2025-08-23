@@ -3,8 +3,7 @@ import bcrypt from "bcryptjs"
 import { prisma } from "@/prisma/prisma"
 import { userRegistrationSchema } from "../utils/userSchemas"
 import z from "zod"
-import { error } from "console"
-import { redirect } from "next/navigation"
+
 
 export const RegisterAction = async (data : z.infer<typeof userRegistrationSchema>)=>{
 
@@ -35,7 +34,7 @@ export const RegisterAction = async (data : z.infer<typeof userRegistrationSchem
     const hashedPassword = await bcrypt.hash(password, 10)
     const emailToLower = email.toLowerCase();
 
-    const user = await prisma.user.create({
+    await prisma.user.create({
         data: {
             name,
             email: emailToLower,

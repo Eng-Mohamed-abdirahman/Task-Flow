@@ -7,6 +7,7 @@ import {
   useSensors,
   DragEndEvent,
   DragOverlay,
+  DragStartEvent,
 } from "@dnd-kit/core";
 import {
   arrayMove,
@@ -16,7 +17,7 @@ import {
 } from "@dnd-kit/sortable";
 import { useDroppable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
-import { useState } from "react";
+import { useState, ReactNode } from "react";
 import { updateTaskAction } from "@/app/actions/updateTask";
 import { Task } from "@/app/utils/tasks";
 
@@ -52,7 +53,12 @@ const columns = [
 ];
 
 // Droppable column component
-function DroppableColumn({ column, children }: any) {
+type DroppableColumnProps = {
+  column: { id: string; name: string; icon: string };
+  children: ReactNode;
+};
+
+function DroppableColumn({ column, children }: DroppableColumnProps) {
   const { setNodeRef, isOver } = useDroppable({ id: column.id });
   return (
     <div
@@ -156,8 +162,8 @@ export default function KanbanClient({ initialTasks }: { initialTasks: Task[] })
 
   const findTask = (id: string) => tasks.find((t) => t.id === id);
 
-  const handleDragStart = (event: any) => {
-    setActiveId(event.active.id);
+  const handleDragStart = (event: DragStartEvent) => {
+    setActiveId(event.active.id as string);
   };
 
   const handleDragEnd = async (event: DragEndEvent) => {

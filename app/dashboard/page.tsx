@@ -11,7 +11,6 @@ const page = async () => {
   } else if (session?.user?.email) {
     displayName = session.user.email.split("@")[0];
   }
-const user = await auth();
 
   return (
     

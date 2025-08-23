@@ -1,8 +1,5 @@
 "use client"
 
-import { usePathname } from "next/navigation";
-import { IconCirclePlusFilled, IconMail, Icon } from "@tabler/icons-react";
-import { Button } from "@/components/ui/button";
 import {
   SidebarGroup,
   SidebarGroupContent,
@@ -10,8 +7,8 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { ClipboardCheck } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export function NavMain({
   items,
@@ -19,7 +16,7 @@ export function NavMain({
   items: {
     title: string;
     url: string;
-    icon?: any;
+    icon?: string | React.JSXElementConstructor<any>;
   }[];
 }) {
   const pathname = usePathname();

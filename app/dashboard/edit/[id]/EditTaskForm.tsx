@@ -19,8 +19,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
 
-export default function EditTaskForm({ initialTask }: { initialTask: any }) {
-  const [submitted, setSubmitted] = useState(false);
+export default function EditTaskForm({ initialTask }: { initialTask: { id: string; title: string; description: string; status: string } }) {
   const form = useForm<z.infer<typeof updateSchema>>({
     resolver: zodResolver(updateSchema),
     defaultValues: {

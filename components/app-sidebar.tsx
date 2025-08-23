@@ -1,27 +1,11 @@
 "use client"
 
-import * as React from "react"
 import {
-  IconCamera,
-  IconChartBar,
-  IconDashboard,
-  IconDatabase,
-  IconFileAi,
-  IconFileDescription,
-  IconFileWord,
-  IconFolder,
-  IconHelp,
-  IconInnerShadowTop,
-  IconListDetails,
-  IconReport,
-  IconSearch,
-  IconSettings,
-  IconUsers,
+  IconReport
 } from "@tabler/icons-react"
+import * as React from "react"
 
-import { NavDocuments } from "@/components/nav-documents"
 import { NavMain } from "@/components/nav-main"
-import { NavSecondary } from "@/components/nav-secondary"
 import { NavUser } from "@/components/nav-user"
 import {
   Sidebar,
@@ -32,10 +16,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { ClipboardCheck, SquareKanban , ListCheck} from "lucide-react"
-import { title } from "process"
-import { auth } from "@/auth"
-import { useSession } from "next-auth/react"
+import { ClipboardCheck, ListCheck, SquareKanban } from "lucide-react"
 
 const data = {
   navMain: [
