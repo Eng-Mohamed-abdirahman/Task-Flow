@@ -180,7 +180,8 @@ const createVariantsWithTransition = (
 ): Variants => {
   if (!transition) return baseVariants;
 
-  const { exit, ...mainTransition } = transition;
+  // Rename 'exit' to '_' to avoid unused variable warning
+  const { exit: _, ...mainTransition } = transition;
 
   return {
     ...baseVariants,
