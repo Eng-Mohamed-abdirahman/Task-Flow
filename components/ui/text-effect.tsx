@@ -180,7 +180,7 @@ const createVariantsWithTransition = (
 ): Variants => {
   if (!transition) return baseVariants;
 
-  // Rename 'exit' to '_' to avoid unused variable warning
+  /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
   const { exit: _, ...mainTransition } = transition;
 
   return {
