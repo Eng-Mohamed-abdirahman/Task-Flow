@@ -7,6 +7,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { Icon } from "next/dist/lib/metadata/types/metadata-types";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -16,7 +17,7 @@ export function NavMain({
   items: {
     title: string;
     url: string;
-    icon?: string | React.JSXElementConstructor<any>;
+    icon?: React.ElementType; // <-- changed from any to React.ElementType
   }[];
 }) {
   const pathname = usePathname();
