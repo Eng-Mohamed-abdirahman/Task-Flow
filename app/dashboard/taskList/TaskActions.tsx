@@ -33,7 +33,7 @@ export default function TaskActions({ id }: { id: string }) {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem asChild>
-          <Link href={`/dashboard/edit/${id}`}>Edit</Link>
+          <Link href={`/dashboard/editPage/${id}`}>Edit</Link>
         </DropdownMenuItem>
         <DropdownMenuItem
           className="text-red-600"
