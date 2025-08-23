@@ -7,9 +7,10 @@ import { useEffect, useState } from "react";
 dayjs.extend(relativeTime);
 
 export default function RelativeTime({ date }: { date: string }) {
-  const [now, setNow] = useState(Date.now());
+  // Use dummy state to trigger re-render every minute
+  const [, forceUpdate] = useState(0);
   useEffect(() => {
-    const interval = setInterval(() => setNow(Date.now()), 60000);
+    const interval = setInterval(() => forceUpdate((n) => n + 1), 60000);
     return () => clearInterval(interval);
   }, []);
   return <span>{dayjs(date).fromNow()}</span>;

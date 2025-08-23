@@ -7,7 +7,6 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { Icon } from "next/dist/lib/metadata/types/metadata-types";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
