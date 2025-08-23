@@ -1,9 +1,12 @@
 import { getTaskById } from "@/app/utils/taskflow";
 import EditTaskForm from "./EditTaskForm";
 
-interface EditTaskPageProps {
-  params: { id: string };
-}
+// just define your own props type, no PageProps
+type EditTaskPageProps = {
+  params: {
+    id: string;
+  };
+};
 
 export default async function EditTaskPage({ params }: EditTaskPageProps) {
   const { id } = params;
