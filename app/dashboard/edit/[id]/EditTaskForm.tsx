@@ -1,25 +1,23 @@
 "use client";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
+import { updateTaskAction } from "@/app/actions/updateTask";
+import { updateSchema } from "@/app/utils/userSchemas";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
-import { useState } from "react";
-import { formSchema, updateSchema } from "@/app/utils/userSchemas";
-import { updateTaskAction } from "@/app/actions/updateTask";
-import { toast } from "sonner";
+import { Textarea } from "@/components/ui/textarea";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { redirect } from "next/navigation";
-import { revalidatePath } from "next/cache";
-import { UpdateTaskInput } from "@/app/utils/tasks";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import * as z from "zod";
 
 export default function EditTaskForm({ initialTask }: { initialTask: any }) {
   const [submitted, setSubmitted] = useState(false);
@@ -43,7 +41,6 @@ export default function EditTaskForm({ initialTask }: { initialTask: any }) {
     toast.success("Task updated successfully!");
     // revalidatePath(`/dashboard/taskList`);
     redirect(`/dashboard/taskList`);
-    setSubmitted(true);
   }
 
   return (

@@ -1,4 +1,4 @@
-// middleware.ts
+
 import { auth } from "@/auth";   // path ku habboon
 
 export default auth((req) => {

@@ -16,9 +16,9 @@ export const RegisterAction = async (data : z.infer<typeof userRegistrationSchem
         return { error   : "invalid user data"}
     }
 
-    let {name , email , password , confirmPassword} = validateData
+    const {name , email , password , confirmPassword} = validateData
 
-    email = email.toLowerCase()
+    
 
     const existingEmail = await prisma.user.findFirst({
         where: { email },
@@ -32,13 +32,14 @@ export const RegisterAction = async (data : z.infer<typeof userRegistrationSchem
         return { error: "Passwords do not match" }
     }
 
-    password = await bcrypt.hash(password, 10)
+    const hashedPassword = await bcrypt.hash(password, 10)
+    const emailToLower = email.toLowerCase();
 
     const user = await prisma.user.create({
         data: {
             name,
-            email,
-            password,
+            email: emailToLower,
+            password: hashedPassword,
             
         },
     })

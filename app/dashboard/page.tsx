@@ -12,7 +12,7 @@ const page = async () => {
     displayName = session.user.email.split("@")[0];
   }
 const user = await auth();
-console.log(user)
+
   return (
     
     <div className="min-h-[70vh] flex flex-col items-center justify-center bg-gradient-to-br from-blue-50 via-teal-50 to-purple-100 dark:from-[#18181b] dark:via-[#232336] dark:to-[#232336] transition-colors">

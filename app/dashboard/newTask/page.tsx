@@ -119,7 +119,7 @@ export default function NewTask() {
               />
               <Button
                 type="submit"
-                className="w-full  text-white"
+                className="w-full  text-white "
                 disabled={form.formState.isSubmitting}
               >
                {form.formState.isSubmitting ? "Submitting..." : "Create Task"}

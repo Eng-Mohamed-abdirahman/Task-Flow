@@ -151,7 +151,7 @@ export default function HeroSection() {
                                         <Button
                                             asChild
                                             size="lg"
-                                            className="rounded-xl px-5 text-base">
+                                            className="rounded-xl px-5 text-base gradient-brand">
                                             <Link href="/dashboard">
                                                 <span className="text-nowrap">Go to Dashboard</span>
                                             </Link>
@@ -161,7 +161,7 @@ export default function HeroSection() {
                                         key={2}
                                         asChild
                                         size="lg"
-                                        variant="ghost"
+                                        variant="outline"
                                         className="h-10.5 rounded-xl px-5">
                                         <Link href="#features">
                                             <span className="text-nowrap">See Features</span>

@@ -96,7 +96,7 @@ export const HeroHeader = () => {
                                 <Button
                                     asChild
                                     size="sm"
-                                    className={cn(isScrolled ? 'lg:inline-flex' : 'hidden')}>
+                                    className={cn(isScrolled ? 'lg:inline-flex' : 'hidden') + " gradient-brand text-white w-32 "}>
                                     <Link href="#">
                                         <span>Get Started</span>
                                     </Link>
@@ -109,3 +109,4 @@ export const HeroHeader = () => {
         </header>
     )
 }
+

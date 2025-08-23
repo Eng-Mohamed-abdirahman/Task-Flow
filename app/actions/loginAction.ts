@@ -15,9 +15,9 @@ export const LoginAction = async ( data : z.infer<typeof LoginSchema>) => {
      return { error: "Invalid login data" };
    }
 
-   let {email , password} = validateData
+   const {email , password} = validateData
 
-   email = email.toLowerCase()
+    
 
    const userExist = await prisma.user.findUnique({
        where: { email }
@@ -26,9 +26,11 @@ export const LoginAction = async ( data : z.infer<typeof LoginSchema>) => {
    if (!userExist) {
        return { error: "User not found" }
    }
-  try {
+
+   const emailToLower = email.toLowerCase();
+   try {
    await signIn("credentials", {
-       email,
+       email: emailToLower,
        password,
        redirectTo: "/dashboard",
     });

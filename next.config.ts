@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
   images: {
     domains: [
       "ik.imagekit.io",
+      "pbs.twimg.com",
       // add other domains if needed
     ],
   },

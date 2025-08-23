@@ -1,3 +1,4 @@
+import { MinimalCardDemo } from "@/components/features";
 import HeroSection from "@/components/hero-section";
 
 export default function Home() {
@@ -16,6 +17,7 @@ export default function Home() {
         
       />
       <HeroSection />
+      <MinimalCardDemo />
     </div>
   );
 }
