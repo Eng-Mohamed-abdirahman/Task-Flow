@@ -1,11 +1,8 @@
 import { getTaskById } from "@/app/utils/taskflow";
 import EditTaskForm from "./EditTaskForm";
+import type { PageProps } from "next"; // Next.js 15 PageProps
 
-type EditTaskPageProps = {
-  params: { id: string };
-};
-
-export default async function EditTaskPage({ params }: EditTaskPageProps) {
+export default async function EditTaskPage({ params }: PageProps<{ id: string }>) {
   const { id } = params;
   const { task, error } = await getTaskById(id);
 
