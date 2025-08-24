@@ -1,8 +1,12 @@
 import { getTaskById } from "@/app/utils/taskflow";
 import EditTaskForm from "./EditTaskForm";
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export default async function EditTaskPage({ params }: any) {
-  const id = String(params.id);
+
+type EditTaskPageProps = {
+  params: { id: string };
+};
+
+export default async function EditTaskPage({ params }: EditTaskPageProps) {
+  const { id } = params;
   const { task, error } = await getTaskById(id);
 
   if (error || !task) {
