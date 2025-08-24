@@ -19,8 +19,10 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
 
+// Add this type:
+type EditTask = z.infer<typeof updateSchema> & { id: string };
 
-export default function EditTaskForm({ initialTask }: { initialTask: z.infer<typeof updateSchema> }) {
+export default function EditTaskForm({ initialTask }: { initialTask: EditTask }) {
   const form = useForm<z.infer<typeof updateSchema>>({
     resolver: zodResolver(updateSchema),
     defaultValues: {
@@ -39,7 +41,6 @@ export default function EditTaskForm({ initialTask }: { initialTask: z.infer<typ
     }
 
     toast.success("Task updated successfully!");
-    // revalidatePath(`/dashboard/taskList`);
     redirect(`/dashboard/taskList`);
   }
 
