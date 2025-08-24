@@ -6,7 +6,7 @@ export default async function EditTaskPage({
 }: {
   params: { id: string };
 }) {
-  const { id } = params;
+  const id = params.id; // id mar walba waa string
   const { task, error } = await getTaskById(id);
 
   if (error || !task) {
