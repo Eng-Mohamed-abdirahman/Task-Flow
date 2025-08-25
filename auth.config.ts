@@ -71,10 +71,10 @@ const authConfig: NextAuthConfig = {
     async session({ session, token }) {
       session.user = {
         ...session.user,
-        id: token.id,
-        name: token.name,
-        email: token.email,
-        image: token.picture,
+        id: token.id as string,
+        name: token.name as string,
+        email: token.email as string,
+        image: token.picture as string,
       };
       return session;
     },

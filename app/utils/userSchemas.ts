@@ -26,15 +26,11 @@ export const userRegistrationSchema = z.object({
 export const formSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters long"),
   description: z.string().min(10, "Description must be at least 10 characters long"),
-  status: z.enum(["Pending", "In Progress", "Done"], {
-    errorMap: () => ({ message: "Invalid status" }),
-  }),
+  status: z.enum(["Pending", "In Progress", "Done"]),
 });
 
 export const updateSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters long").optional(),
   description: z.string().min(3, "Description must be at least 3 characters long").optional(),
-  status: z.enum(["Pending", "In Progress", "Done"], {
-    errorMap: () => ({ message: "Invalid status" }),
-  }).optional(),
+  status: z.enum(["Pending", "In Progress", "Done"]).optional(),
 });

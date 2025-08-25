@@ -4,8 +4,6 @@ import { TaskSchema } from "./TaskSchema";
 export type Task = z.infer<typeof TaskSchema> & {
   id: string;
   userId: string;
-  createdAt: Date | string;
-  updatedAt: Date | string;
 };
 
 export interface AddTaskInput {

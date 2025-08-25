@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { getTasks } from "@/app/utils/taskflow";
 import RelativeTime from "@/components/RelativeTime";
 import { Badge } from "@/components/ui/badge";
@@ -19,7 +20,7 @@ type Task = {
   title: string;
   status: "Pending" | "In Progress" | "Done";
   date?: string;
-  createdAt?: string;
+  createdAt?: string | Date;
 };
 
 export default async function TaskList() {
@@ -57,7 +58,7 @@ export default async function TaskList() {
                                     {task.date}
                                     {task.createdAt && (
                                         <span className="ml-2 text-xs text-gray-400">
-                                            • <RelativeTime date={task.createdAt} />
+                                            • <RelativeTime date={typeof task.createdAt === "string" ? task.createdAt : task.createdAt.toISOString()} />
                                         </span>
                                     )}
                                 </div>

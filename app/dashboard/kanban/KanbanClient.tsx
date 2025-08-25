@@ -125,14 +125,7 @@ function SortableCard({ task }: { task: Task }) {
         <Avatar name={task.title} />
       </div>
       <p className="text-gray-500 text-sm truncate">{task.description}</p>
-      <div className="flex items-center justify-between mt-2">
-        <span className="text-xs text-gray-400">
-          {new Date(task.createdAt).toLocaleDateString(undefined, {
-            month: "short",
-            day: "numeric",
-            year: "2-digit",
-          })}
-        </span>
+      <div className="flex items-center justify-end mt-2">
         <span
           className={`
             text-xs px-2 py-0.5 rounded-full font-medium
@@ -179,7 +172,9 @@ export default function KanbanClient({ initialTasks }: { initialTasks: Task[] })
       const newStatus = over.id as string;
       if (normalizeStatus(activeTask.status) !== newStatus) {
         const updatedTasks = tasks.map((t) =>
-          t.id === activeTask.id ? { ...t, status: newStatus } : t
+          t.id === activeTask.id
+            ? { ...t, status: toBackendStatus(newStatus) as "Pending" | "In Progress" | "Done" }
+            : t
         );
         setTasks(updatedTasks);
         await updateTaskAction(activeTask.id, { status: toBackendStatus(newStatus) });
@@ -204,7 +199,9 @@ export default function KanbanClient({ initialTasks }: { initialTasks: Task[] })
     } else {
       // Move to another column (at position of overTask)
       const updatedTasks = tasks.map((t) =>
-        t.id === activeTask.id ? { ...t, status: normalizeStatus(overTask.status) } : t
+        t.id === activeTask.id
+          ? { ...t, status: toBackendStatus(normalizeStatus(overTask.status)) as "Pending" | "In Progress" | "Done" }
+          : t
       );
       setTasks(updatedTasks);
       await updateTaskAction(activeTask.id, { status: toBackendStatus(normalizeStatus(overTask.status)) });
@@ -253,7 +250,6 @@ export default function KanbanClient({ initialTasks }: { initialTasks: Task[] })
           </DragOverlay>
         </DndContext>
       </div>
-      
     </div>
   );
 }
